@@ -1,12 +1,13 @@
 'use client'
 
 import CustomFormField, { FormFieldTypes } from '@/components/CustomFormField'
+import FileUploader from '@/components/FileUploader'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SelectItem } from '@/components/ui/select'
-import { Doctors } from '@/constants'
+import { Doctors, IdentificationTypes } from '@/constants'
 import { createUser } from '@/lib/actions/patient.actions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
@@ -32,8 +33,6 @@ const formSchema = z.object({
 export default function RegisterForm({ user }: { user: User }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-
-  console.log({ user })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -177,7 +176,11 @@ export default function RegisterForm({ user }: { user: User }) {
           placeholder="Select a physician"
         >
           {Doctors.map((doctor) => (
-            <SelectItem key={doctor.name} value={doctor.name}>
+            <SelectItem
+              key={doctor.name}
+              value={doctor.name}
+              className="cursor-pointer hover:bg-gray-700"
+            >
               <div className="flex cursor-pointer items-center gap-2">
                 <Image
                   src={doctor.image}
@@ -191,6 +194,95 @@ export default function RegisterForm({ user }: { user: User }) {
             </SelectItem>
           ))}
         </CustomFormField>
+        <div className="flex flex-col gap-6 xl:flex-row">
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Input}
+            label="Insurance Provider"
+            name="insuranceProvider"
+            placeholder="BlueCross BlueShield"
+          />
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Input}
+            label="Insurance Policy Number"
+            name="insurancePolicyNumber"
+            placeholder="ABC123456789"
+          />
+        </div>
+        <div className="flex flex-col gap-6 xl:flex-row">
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Textarea}
+            label="Allergies (if any)"
+            name="allergies"
+            placeholder="Peanuts, Penicillin, Pollen"
+          />
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Textarea}
+            label="Current Medications (if any)"
+            name="currentMedications"
+            placeholder="Ibuprofen 200mg, Paracetamol 500mg"
+          />
+        </div>
+        <div className="flex flex-col gap-6 xl:flex-row">
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Textarea}
+            label="Family Medical History"
+            name="familyMedicalHistory"
+            placeholder="Mother is healthy"
+          />
+          <CustomFormField
+            control={form.control}
+            type={FormFieldTypes.Textarea}
+            label="Past Medical History"
+            name="pastMedicalHistory"
+            placeholder="Appendectomy, Tonsillectomy"
+          />
+        </div>
+
+        <section className="space-y-6">
+          <div className="mb-9 space-y-1"></div>
+          <h2 className="sub-header">Identification and Verification</h2>
+        </section>
+
+        <CustomFormField
+          control={form.control}
+          type={FormFieldTypes.Select}
+          label="Identification type"
+          name="identificationType"
+          placeholder="Select an identification type"
+        >
+          {IdentificationTypes.map((type) => (
+            <SelectItem
+              key={type}
+              value={type}
+              className="cursor-pointer hover:bg-gray-700"
+            >
+              {type}
+            </SelectItem>
+          ))}
+        </CustomFormField>
+        <CustomFormField
+          control={form.control}
+          type={FormFieldTypes.Input}
+          label="Identification number"
+          name="identificationNumber"
+          placeholder="123456789"
+        />
+        <CustomFormField
+          control={form.control}
+          type={FormFieldTypes.Skeleton}
+          label="Scanned copy of identification document"
+          name="identificationDocument"
+          renderSkeleton={(field) => (
+            <FormControl>
+              <FileUploader files={field.value} onChange={field.onChange} />
+            </FormControl>
+          )}
+        />
 
         <Button
           type="submit"

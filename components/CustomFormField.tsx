@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import Image from 'next/image'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -79,6 +80,17 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
           </FormControl>
         </div>
       )
+    case FormFieldTypes.Textarea:
+      return (
+        <FormControl>
+          <Textarea
+            placeholder={placeholder}
+            {...field}
+            className="shad-textArea"
+            disabled={props.disabled}
+          />
+        </FormControl>
+      )
     case FormFieldTypes.Phone:
       return (
         <FormControl>
@@ -113,8 +125,6 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
           </FormControl>
         </div>
       )
-    case FormFieldTypes.Skeleton:
-      return renderSkeleton?.(field)
     case FormFieldTypes.Select:
       return (
         <FormControl>
@@ -130,6 +140,8 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
           </Select>
         </FormControl>
       )
+    case FormFieldTypes.Skeleton:
+      return renderSkeleton?.(field)
   }
 }
 

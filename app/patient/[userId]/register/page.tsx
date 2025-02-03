@@ -6,9 +6,7 @@ import React from 'react'
 
 export default async function Register({ params }: SearchParamProps) {
   const { userId } = await params
-  const user = await getUser(userId)
-
-  console.log({ user })
+  // const user = await getUser(userId)
 
   return (
     <div className="flex h-screen max-h-screen">
@@ -21,7 +19,7 @@ export default async function Register({ params }: SearchParamProps) {
             width={1000}
             className="mb-12 h-10 w-fit"
           />
-          <RegisterForm user={user} />
+          <RegisterForm user={{}} />
 
           <div className="text-14-regular mt-12 flex justify-between">
             <p className="justify-items-end text-dark-600 xl:text-left">
