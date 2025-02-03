@@ -3,8 +3,10 @@
 import CustomFormField, { FormFieldTypes } from '@/components/CustomFormField'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
+import { createUser } from '@/lib/actions/patient.actions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -24,6 +26,7 @@ const formSchema = z.object({
 })
 
 export default function PatientForm() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -35,10 +38,13 @@ export default function PatientForm() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true)
-      console.log(values)
+      const user = await createUser({ ...values })
+      if (user) {
+        router.push(`/patient/${user.$id}/register`)
+      }
     } catch (e) {
       console.log(e)
     } finally {
@@ -55,7 +61,7 @@ export default function PatientForm() {
         </section>
         <CustomFormField
           control={form.control}
-          fieldType={FormFieldTypes.Input}
+          type={FormFieldTypes.Input}
           label="Full name"
           name="name"
           placeholder="John Doe"
@@ -64,7 +70,7 @@ export default function PatientForm() {
         />
         <CustomFormField
           control={form.control}
-          fieldType={FormFieldTypes.Input}
+          type={FormFieldTypes.Input}
           label="Email"
           name="email"
           placeholder="johndoe@gmail.com"
@@ -73,7 +79,7 @@ export default function PatientForm() {
         />
         <CustomFormField
           control={form.control}
-          fieldType={FormFieldTypes.Phone}
+          type={FormFieldTypes.Phone}
           label="Phone"
           name="phone"
         />
