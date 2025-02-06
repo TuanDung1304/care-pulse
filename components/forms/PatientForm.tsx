@@ -4,6 +4,7 @@ import CustomFormField, { FormFieldTypes } from '@/components/CustomFormField'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { createUser } from '@/lib/actions/patient.actions'
+import { UserFormValidation } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -11,26 +12,12 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters.')
-    .max(50, 'Name must be at most 50 characters.'),
-  email: z.string().email('Invalid email address.'),
-  phone: z
-    .string()
-    .refine(
-      (value) => /^\+?[1-9]\d{1,14}$/.test(value),
-      'Invalid phone number.',
-    ),
-})
-
 export default function PatientForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof UserFormValidation>>({
+    resolver: zodResolver(UserFormValidation),
     defaultValues: {
       name: '',
       email: '',
@@ -38,7 +25,7 @@ export default function PatientForm() {
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
     try {
       setLoading(true)
       const user = await createUser({ ...values })

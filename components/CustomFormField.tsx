@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
   FormField,
@@ -138,6 +139,21 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
               {props.children}
             </SelectContent>
           </Select>
+        </FormControl>
+      )
+    case FormFieldTypes.Checkbox:
+      return (
+        <FormControl>
+          <div className="flex items-center gap-4">
+            <Checkbox
+              id={props.name}
+              checked={field.value}
+              onChange={field.onChange}
+            />
+            <label htmlFor={props.name} className="checkbox-label">
+              {props.label}
+            </label>
+          </div>
         </FormControl>
       )
     case FormFieldTypes.Skeleton:

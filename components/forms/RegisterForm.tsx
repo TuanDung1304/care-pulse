@@ -7,8 +7,13 @@ import { Form, FormControl } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SelectItem } from '@/components/ui/select'
-import { Doctors, IdentificationTypes } from '@/constants'
-import { createUser } from '@/lib/actions/patient.actions'
+import {
+  Doctors,
+  IdentificationTypes,
+  PatientFormDefaultValues,
+} from '@/constants'
+import { registerPatient } from '@/lib/actions/patient.actions'
+import { PatientFormValidation } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -16,39 +21,44 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters.')
-    .max(50, 'Name must be at most 50 characters.'),
-  email: z.string().email('Invalid email address.'),
-  phone: z
-    .string()
-    .refine(
-      (value) => /^\+?[1-9]\d{1,14}$/.test(value),
-      'Invalid phone number.',
-    ),
-})
-
 export default function RegisterForm({ user }: { user: User }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof PatientFormValidation>>({
+    resolver: zodResolver(PatientFormValidation),
     defaultValues: {
+      ...PatientFormDefaultValues,
       name: '',
       email: '',
       phone: '',
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     try {
       setLoading(true)
-      const user = await createUser({ ...values })
-      if (user) {
-        router.push(`/patient/${user.$id}/register`)
+      const formData = new FormData()
+      const file = values.identificationDocument?.[0]
+
+      if (file) {
+        const blobFile = new Blob([file], { type: file.type })
+        formData.append('blobFile', blobFile)
+        formData.append('fileName', file.name)
+      }
+
+      try {
+        const patientData = {
+          ...values,
+          userId: user.$id,
+          birthDat: new Date(values.birthDate),
+          identificationDocument: formData,
+        }
+
+        const patient = await registerPatient(patientData)
+        if (patient) router.push(`/patient/${user.$id}/new-appointment`)
+      } catch (error) {
+        console.log(error)
       }
     } catch (e) {
       console.log(e)
@@ -282,6 +292,29 @@ export default function RegisterForm({ user }: { user: User }) {
               <FileUploader files={field.value} onChange={field.onChange} />
             </FormControl>
           )}
+        />
+
+        <section className="space-y-6">
+          <div className="mb-9 space-y-1"></div>
+          <h2 className="sub-header">Consent and Privacy</h2>
+        </section>
+        <CustomFormField
+          type={FormFieldTypes.Checkbox}
+          control={form.control}
+          name="treatmentConsent"
+          label="I consent to treatment"
+        />
+        <CustomFormField
+          type={FormFieldTypes.Checkbox}
+          control={form.control}
+          name="disclosureConsent"
+          label="I consent to disclosure of information"
+        />
+        <CustomFormField
+          type={FormFieldTypes.Checkbox}
+          control={form.control}
+          name="privacyConsent"
+          label="I acknowledge the privacy policy"
         />
 
         <Button

@@ -1,17 +1,16 @@
 import RegisterForm from '@/components/forms/RegisterForm'
 import { getUser } from '@/lib/actions/patient.actions'
 import Image from 'next/image'
-import Link from 'next/link'
 import React from 'react'
 
 export default async function Register({ params }: SearchParamProps) {
   const { userId } = await params
-  // const user = await getUser(userId)
+  const user = await getUser(userId)
 
   return (
     <div className="flex h-screen max-h-screen">
-      <section className="remove-scrollbar container my-auto">
-        <div className="sub-container max-w-[496px]">
+      <section className="remove-scrollbar container">
+        <div className="sub-container max-w-[860px] flex-1 flex-col">
           <Image
             src="/assets/icons/logo-full.svg"
             alt="patient"
@@ -19,17 +18,9 @@ export default async function Register({ params }: SearchParamProps) {
             width={1000}
             className="mb-12 h-10 w-fit"
           />
-          <RegisterForm user={{}} />
+          <RegisterForm user={user} />
 
-          <div className="text-14-regular mt-12 flex justify-between">
-            <p className="justify-items-end text-dark-600 xl:text-left">
-              © 2025 CarePulse
-            </p>
-
-            <Link href="?admin=true" className="text-green-500">
-              Admin
-            </Link>
-          </div>
+          <p className="copyright py-12">© 2025 CarePulse</p>
         </div>
       </section>
       <Image
