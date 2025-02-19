@@ -59,6 +59,7 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
     dateFormat,
     renderSkeleton,
   } = props
+
   switch (type) {
     case FormFieldTypes.Input:
       return (
@@ -148,7 +149,7 @@ const RenderInput = ({ field, props }: { field: any; props: Props }) => {
             <Checkbox
               id={props.name}
               checked={field.value}
-              onChange={field.onChange}
+              onCheckedChange={field.onChange}
             />
             <label htmlFor={props.name} className="checkbox-label">
               {props.label}

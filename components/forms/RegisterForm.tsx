@@ -47,21 +47,18 @@ export default function RegisterForm({ user }: { user: User }) {
         formData.append('fileName', file.name)
       }
 
-      try {
-        const patientData = {
-          ...values,
-          userId: user.$id,
-          birthDat: new Date(values.birthDate),
-          identificationDocument: formData,
-        }
-
-        const patient = await registerPatient(patientData)
-        if (patient) router.push(`/patient/${user.$id}/new-appointment`)
-      } catch (error) {
-        console.log(error)
+      const patientData = {
+        ...values,
+        userId: user.$id,
+        birthDate: new Date(values.birthDate),
+        identificationDocument: formData,
       }
-    } catch (e) {
-      console.log(e)
+
+      //@ts-expect-error luoi fix
+      const patient = await registerPatient(patientData)
+      if (patient) router.push(`/patient/${user.$id}/new-appointment`)
+    } catch (error) {
+      console.log(error)
     } finally {
       setLoading(false)
     }

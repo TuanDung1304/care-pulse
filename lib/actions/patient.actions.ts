@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+'use server'
+
 import {
   BUCKET_ID,
   DATABASE_ID,

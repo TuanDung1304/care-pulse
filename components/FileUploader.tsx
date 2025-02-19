@@ -11,9 +11,13 @@ interface Props {
 }
 
 export default function FileUploader({ files, onChange }: Props) {
-  const onDrop = useCallback((acceptedFiles) => {
-    // Do something with the files
-  }, [])
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      onChange(acceptedFiles)
+    },
+    [onChange],
+  )
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
   return (
@@ -25,7 +29,7 @@ export default function FileUploader({ files, onChange }: Props) {
           width={1000}
           height={1000}
           alt="uploaded image"
-          className="max-h-[400px] overflow-hidden object-cover"
+          className="max-h-[400px] w-auto overflow-hidden object-cover"
         />
       ) : (
         <>
@@ -43,6 +47,11 @@ export default function FileUploader({ files, onChange }: Props) {
             <p>SVG, PNG, JPG or GIF (max 800x400)</p>
           </div>
         </>
+      )}
+      {isDragActive ? (
+        <p>Drop the files here...</p>
+      ) : (
+        <p>Drag and drop some files here, or click to select files</p>
       )}
     </div>
   )
